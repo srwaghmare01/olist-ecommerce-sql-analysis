@@ -1,37 +1,44 @@
-# Olist Brazilian E-Commerce — SQL Analysis
+# Olist Brazilian E-Commerce — SQL & Power BI Analysis
 
-## Project Overview
+> **Business question:** What does 100,000 real e-commerce orders tell us about revenue, customer behaviour, and operational performance — and where are the biggest opportunities to improve?
 
-This project analyses real transactional data from Olist, Brazil's largest e-commerce marketplace. Using SQL, I explored customer behaviour, revenue trends, product performance, seller activity, delivery times, and customer satisfaction across nearly 100,000 orders.
-
-The goal was to answer key business questions that a data analyst would realistically be asked in a commercial setting — and to identify any data quality issues along the way.
+📊 [View Live Power BI Dashboard](https://app.powerbi.com/view?r=eyJrIjoiYzNiMjc0OGEtMTUxNy00YTEyLTgyM2ItYjQ1YTVlMDliYzY5IiwidCI6ImJkYjc0YjMwLTk1NjgtNDg1Ni1iZGJmLTA2NzU5Nzc4ZmNiYyIsImMiOjh9)
 
 ---
 
-## Dataset
+## Dashboard Preview
 
-- **Source:** [Kaggle — Brazilian E-Commerce Public Dataset by Olist](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
-- **Size:** 99,441 orders
-- **Tool:** SQLiteOnline.com (SQLite)
+![Olist Brazilian E-Commerce Dashboard](dashboard.png)
 
 ---
 
-## Tables Used
+## Project Summary
 
-| Table | Description |
+End-to-end SQL analysis and Power BI dashboard built on 99,441 real orders from Olist, Brazil's largest e-commerce marketplace. I wrote 15 SQL queries across 8 joined tables to answer realistic business questions covering revenue, payment behaviour, delivery performance, product mix, and customer satisfaction — then visualised the findings in an interactive Power BI dashboard.
+
+**Tools:** SQLite · Power BI · Excel  
+**Dataset:** [Kaggle — Brazilian E-Commerce Public Dataset by Olist](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
+
+---
+
+## Key Findings
+
+| Area | Finding |
 |---|---|
-| orders | Order IDs, statuses, and timestamps |
-| customers | Customer IDs and city locations |
-| order_items | Products within each order |
-| payments | Payment types and values |
-| reviews | Customer review scores |
-| products | Product categories and details |
-| sellers | Seller IDs and locations |
-| name_translation | Portuguese to English category translations |
+| 💰 Revenue | R$16,008,872 total across 99,441 orders |
+| 📦 Delivery rate | 96.4% of orders successfully delivered |
+| 💳 Payments | Credit card dominates at 74% of transactions |
+| 🛒 Avg order value | R$154.10 |
+| ⭐ Customer satisfaction | Average review score 4.09 / 5 |
+| 🏙️ Geography | São Paulo + Rio de Janeiro = 22% of all customers |
+| 🛏️ Top category | Bed, table & bath — 11,115 units sold |
+| 💡 Pricing insight | Computer accessories rank 3rd in revenue but 5th in volume — higher margin per unit |
+| 🚚 Delivery time | Average 12.6 days (expected given Brazil's geography) |
+| ⚠️ Review pattern | 1-star reviews outnumber 2-star — J-curve effect: unhappy customers leave the worst rating |
 
 ---
 
-## Questions Answered
+## Business Questions Answered
 
 | # | Question |
 |---|---|
@@ -43,7 +50,7 @@ The goal was to answer key business questions that a data analyst would realisti
 | Q6 | What is the highest and lowest order value? |
 | Q7 | How many orders were placed each year? |
 | Q8 | Which cities have the most customers? |
-| Q9 | What are the top 10 best selling product categories? |
+| Q9 | What are the top 10 best-selling product categories? |
 | Q10 | What is the average review score? |
 | Q11 | What is the full review score distribution? |
 | Q12 | Which sellers made the most sales? |
@@ -53,64 +60,60 @@ The goal was to answer key business questions that a data analyst would realisti
 
 ---
 
-## Key Findings
+## Data Quality Issues Identified
 
-- **99,441 total orders** across the dataset
-- **96.4% of orders were successfully delivered**
-- **R$16,008,872** total revenue generated
-- **Credit card** is the dominant payment method — 74% of all transactions
-- **Average order value** is R$154.10
-- **Sao Paulo and Rio de Janeiro** account for 22% of all customers
-- **Bed, table & bath** is the top selling category by volume (11,115 units)
-- **Computer accessories** rank 3rd in revenue despite being 5th in units — higher price per item
-- **Average customer review score** is 4.09 out of 5
-- **1-star reviews outnumber 2-star reviews** — a J-curve pattern indicating customers who are unhappy tend to leave the worst possible rating
-- **Average delivery time** is 12.6 days — expected given Brazil's size and geography
-- **Top customer spent R$13,664** — matching the highest single order value, suggesting a bulk or business purchase
+| Issue | Impact | How I handled it |
+|---|---|---|
+| 3 orders with undefined payment type and R$0 revenue | Distorts average order value | Flagged in findings; noted as a data quality gap |
+| Lowest order value = R$0 (linked to above) | Misleading min value | Highlighted separately rather than treated as valid |
+| 2016 and 2018 are incomplete years | Not suitable for YoY comparison | Excluded from year-over-year conclusions |
+| Some orders missing delivery date | Skews average delivery time | Filtered using `IS NOT NULL` before calculating average |
 
 ---
 
-## Data Quality Issues Found
+## Data Model
 
-| Issue | Where Found |
+| Table | Description |
 |---|---|
-| 3 orders with undefined payment type and R$0 revenue | Q4 |
-| Lowest order value of R$0 — linked to undefined payment issue | Q6 |
-| 2016 and 2018 are incomplete years — not suitable for direct year-on-year comparison | Q7 |
-| Some orders have no delivery date — filtered using IS NOT NULL to avoid distorting averages | Q13 |
+| `orders` | Order IDs, statuses, and timestamps |
+| `customers` | Customer IDs and city locations |
+| `order_items` | Products within each order |
+| `payments` | Payment types and values |
+| `reviews` | Customer review scores |
+| `products` | Product categories and details |
+| `sellers` | Seller IDs and locations |
+| `name_translation` | Portuguese to English category translations |
 
 ---
 
 ## SQL Concepts Used
 
-- SELECT, FROM, WHERE
-- COUNT, SUM, AVG, MAX, MIN
-- GROUP BY, ORDER BY, LIMIT
-- ROUND, JULIANDAY, strftime
-- JOIN across 2 and 3 tables
-- IS NOT NULL filtering
-- Aliases using AS
+- `SELECT`, `FROM`, `WHERE`, `GROUP BY`, `ORDER BY`, `LIMIT`
+- Aggregate functions: `COUNT`, `SUM`, `AVG`, `MAX`, `MIN`, `ROUND`
+- Multi-table `JOIN` (2 and 3 tables)
+- Date functions: `JULIANDAY`, `strftime`
+- `IS NOT NULL` filtering
+- Column aliases with `AS`
 
 ---
 
-## Power BI Dashboard
-
-[View Interactive Dashboard] (https://app.powerbi.com/view?r=eyJrIjoiYzNiMjc0OGEtMTUxNy00YTEyLTgyM2ItYjQ1YTVlMDliYzY5IiwidCI6ImJkYjc0YjMwLTk1NjgtNDg1Ni1iZGJmLTA2NzU5Nzc4ZmNiYyIsImMiOjh9)
-
----
-
-## Files in This Repository
+## Repository Files
 
 | File | Description |
 |---|---|
-| olist_ecommerce_analysis.sql | All 15 SQL queries with comments |
-| Olist_SQL_Analysis_Shweta_Waghmare.docx | Full project report with results and insights |
-| olist_dashboard_data.xlsx | Data used to build the Power BI dashboard |
-| README.md | This file |
+| `olist_ecommerce_analysis.sql` | All 15 SQL queries with comments |
+| `Olist_SQL_Analysis_Shweta_Waghmare.docx` | Full written report with results and business interpretation |
+| `olist_dashboard_data.xlsx` | Cleaned data used to build the Power BI dashboard |
+| `dashboard.png` | Dashboard screenshot |
+| `README.md` | This file |
 
 ---
 
-## Author
+## About the Author
 
-**Shweta Waghmare**
-GitHub: [srwaghmare01](https://github.com/srwaghmare01)
+**Shweta Waghmare** — Junior Data Analyst based in the UK, open to graduate roles and internships.
+
+- 🔗 [LinkedIn](https://www.linkedin.com/in/shweta-ramesh-waghmare-2a0ba0387/)
+- 🐙 [GitHub](https://github.com/srwaghmare01)
+- 📊 [AI Job Displacement Dashboard](https://github.com/srwaghmare01/ai-job-displacement-dashboard)
+- 🐍 [Python Analytics Portfolio](https://github.com/srwaghmare01/python-data-analytics-portfolio)
